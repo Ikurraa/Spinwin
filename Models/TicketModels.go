@@ -99,8 +99,10 @@ type RedeemTicket struct {
 	Id            int    `json:"id"`
 	Ticket_code   string `json:"ticketcode"`
 	Redeem_status int    `json:"redeemstatus"`
-	Updateat      string `json:"updateat"`
-	Updateby      string `json:"updateby"`
+	Ticket_status int    `json:"ticketstatus"`
+	Status        int    `json:"status"`
+	Updated_at    string `json:"updatedat"`
+	Update_by     string `json:"updateby"`
 }
 
 func (ticket *RedeemTicket) TableName() string {
@@ -135,13 +137,4 @@ type ViewUnusedTicket struct {
 
 func (ticket *ViewUnusedTicket) TableName() string {
 	return "v_ticket"
-}
-
-type ChangePassword struct {
-	Id       int    `json:"id"`
-	Password string `json:"password"`
-}
-
-func (ticket *ChangePassword) TableName() string {
-	return "tbl_user"
 }

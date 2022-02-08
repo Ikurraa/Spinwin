@@ -96,12 +96,19 @@ func UpdateUser(c *gin.Context) {
 			})
 			return
 		}
-		passdata := Models.UpdateUser{
-			Username: input.Username}
-		db.Model(&user).Update(passdata)
-		c.JSON(http.StatusOK, gin.H{
-			"message": "user berhasil di update",
-		})
+		var sameuser Models.UpdateUser
+		if err := db.Where("username = ?", input.Username).Limit(1).Find(&sameuser).RowsAffected; err != 0 {
+			c.JSON(http.StatusConflict, gin.H{
+				"error": "username sudah terdaftar",
+			})
+		} else {
+			passdata := Models.UpdateUser{
+				Username: input.Username}
+			db.Model(&user).Update(passdata)
+			c.JSON(http.StatusOK, gin.H{
+				"message": "user berhasil di update",
+			})
+		}
 	}
 }
 
@@ -204,19 +211,13 @@ func ChangePassword(c *gin.Context) {
 			})
 			return
 		} else {
-			if err := bcrypt.CompareHashAndPassword([]byte(user.Password), []byte(input.Password)); err != nil {
-				c.JSON(http.StatusBadRequest, gin.H{
-					"error": err.Error(),
-				})
-				return
-			} else {
-				passdata := Models.ChangePassword{
-					Password: input.Password}
-				db.Model(&user).Update(passdata)
-				c.JSON(http.StatusBadRequest, gin.H{
-					"message": "Sukses mengubah password",
-				})
-			}
+			hashed_password, _ := bcrypt.GenerateFromPassword([]byte(input.Password), 8)
+			passdata := Models.ChangePassword{
+				Password: string(hashed_password)}
+			db.Model(&user).Update(passdata)
+			c.JSON(http.StatusOK, gin.H{
+				"message": "Sukses mengubah password",
+			})
 		}
 	}
 }

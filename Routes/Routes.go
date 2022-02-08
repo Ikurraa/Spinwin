@@ -5,12 +5,11 @@ import (
 	"awesomespinner/Middleware"
 	"github.com/gin-gonic/gin"
 	"github.com/jinzhu/gorm"
-	cors "github.com/rs/cors/wrapper/gin"
 )
 
 func Routes(db *gorm.DB) *gin.Engine {
 	r := gin.Default()
-	r.Use(cors.Default())
+	r.Use(Middleware.CORS())
 	r.Use(func(c *gin.Context) {
 		c.Set("db", db)
 	})

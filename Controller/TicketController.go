@@ -321,28 +321,36 @@ func RedeemTicket(c *gin.Context) {
 			return
 		}
 		if input.Ticket_code == ticket.Ticket_code {
-			timenow := time.Now().Format(time.RFC3339)
-			user, err := GetCurrentUser(c)
-			if err != nil {
+			if ticket.Ticket_status == 1 && ticket.Status == 0 {
+				timenow := time.Now().Format(time.RFC3339)
+				user, err := GetCurrentUser(c)
+				if err != nil {
+					c.JSON(http.StatusBadRequest, gin.H{
+						"error": err.Error(),
+					})
+					return
+				}
+				passdata := Models.RedeemTicket{
+					Id:            ticket.Id,
+					Ticket_code:   input.Ticket_code,
+					Update_by:     user.Username,
+					Updated_at:    timenow,
+					Redeem_status: 1}
+				log := Models.Log{
+					User_id:     user.ID,
+					Last_update: "Redeem Ticket " + ticket.Ticket_code}
+				db.Model(&ticket).Update(passdata)
+				db.Create(&log)
+				c.JSON(http.StatusOK, gin.H{
+					"message": "Ticket sudah di redeem",
+				})
+			} else {
 				c.JSON(http.StatusBadRequest, gin.H{
-					"error": err.Error(),
+					"error": "Ticket tidak dapat di redeem",
 				})
 				return
 			}
-			passdata := Models.RedeemTicket{
-				Id:            ticket.Id,
-				Ticket_code:   input.Ticket_code,
-				Updateby:      user.Username,
-				Updateat:      timenow,
-				Redeem_status: 1}
-			log := Models.Log{
-				User_id:     user.ID,
-				Last_update: "Redeem Ticket " + ticket.Ticket_code}
-			db.Model(&ticket).Update(passdata)
-			db.Create(&log)
-			c.JSON(http.StatusOK, gin.H{
-				"message": "Ticket sudah di redeem",
-			})
+
 		} else {
 			c.JSON(http.StatusBadRequest, gin.H{
 				"error": "Terjadi kesalahan",

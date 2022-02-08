@@ -76,3 +76,12 @@ type ViewUser struct {
 func (user *ViewUser) TableName() string {
 	return "v_user"
 }
+
+type ChangePassword struct {
+	Id       int    `json:"id"`
+	Password string `json:"password"`
+}
+
+func (ticket *ChangePassword) TableName() string {
+	return "tbl_user"
+}
