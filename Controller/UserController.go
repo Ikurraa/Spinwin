@@ -215,7 +215,7 @@ func ChangePassword(c *gin.Context) {
 			passdata := Models.ChangePassword{
 				Password: string(hashed_password)}
 			db.Model(&user).Update(passdata)
-			c.JSON(http.StatusBadRequest, gin.H{
+			c.JSON(http.StatusOK, gin.H{
 				"message": "Sukses mengubah password",
 			})
 		}
