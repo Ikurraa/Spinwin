@@ -136,7 +136,7 @@ func ValidateUser(c *gin.Context) {
 		} else {
 			if user.Status == 0 {
 				if user.Role == "Admins" {
-					ValidToken, err := GenerateJWTUser(user.ID)
+					ValidToken, err := GenerateJWTUser(user.ID, user.Role)
 					if err != nil {
 						c.JSON(http.StatusBadRequest, gin.H{
 							"error": err.Error(),
@@ -148,12 +148,13 @@ func ValidateUser(c *gin.Context) {
 							Last_login: timenow}
 						db.Model(&user).Update(login)
 						c.JSON(http.StatusOK, gin.H{
-							"token":   ValidToken,
-							"message": 1,
+							"token":     ValidToken,
+							"message":   1,
+							"user_role": user.Role,
 						})
 					}
 				} else {
-					ValidToken, err := GenerateJWTUser(user.ID)
+					ValidToken, err := GenerateJWTUser(user.ID, user.Role)
 					if err != nil {
 						c.JSON(http.StatusBadRequest, gin.H{
 							"error": err.Error(),
@@ -165,8 +166,9 @@ func ValidateUser(c *gin.Context) {
 							Last_login: timenow}
 						db.Model(&user).Update(login)
 						c.JSON(http.StatusOK, gin.H{
-							"token":   ValidToken,
-							"message": 0,
+							"token":     ValidToken,
+							"message":   0,
+							"user_role": user,
 						})
 					}
 				}
@@ -192,6 +194,20 @@ func GetCurrentUser(c *gin.Context) (Models.User, error) {
 		return user, fmt.Errorf("User Tidak ditemukan %s ", user_id)
 	} else {
 		return user, nil
+	}
+}
+
+func GetCurrentRoleUser(c *gin.Context) {
+	role, err := ExtractTokenRoleUser(c)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{
+			"error": "Terjadi kesalahan",
+		})
+		return
+	} else {
+		c.JSON(http.StatusOK, gin.H{
+			"role": role,
+		})
 	}
 }
 

@@ -10,7 +10,7 @@ import (
 	"time"
 )
 
-func GenerateJWTUser(userid int) (s string, string error) {
+func GenerateJWTUser(userid int, role string) (s string, string error) {
 	token_lifespawn, err := strconv.Atoi(os.Getenv("Token_lifetime"))
 
 	if err != nil {
@@ -20,6 +20,7 @@ func GenerateJWTUser(userid int) (s string, string error) {
 
 	claims["authorized"] = true
 	claims["user_id"] = userid
+	claims["role"] = role
 	claims["exp"] = time.Now().Add(time.Hour * time.Duration(token_lifespawn)).Unix()
 	token := jwt.NewWithClaims(jwt.SigningMethodHS256, claims)
 
@@ -36,7 +37,7 @@ func GenerateJWTTicket(userid int) (s string, string error) {
 
 	claims["authorized"] = true
 	claims["user_id"] = userid
-	claims["exp"] = time.Now().Add(time.Hour * time.Duration(token_lifespawn)).Unix()
+	claims["exp"] = time.Now().Add(time.Minute * time.Duration(token_lifespawn)).Unix()
 	token := jwt.NewWithClaims(jwt.SigningMethodHS256, claims)
 
 	return token.SignedString([]byte(os.Getenv("TICKET_SECRET")))
@@ -126,4 +127,25 @@ func ExtractTokenIDUser(c *gin.Context) (uint, error) {
 		return uint(uname), nil
 	}
 	return 0, nil
+}
+
+func ExtractTokenRoleUser(c *gin.Context) (string, error) {
+	tokenString := ExtractToken(c)
+	token, err := jwt.Parse(tokenString, func(token *jwt.Token) (interface{}, error) {
+		if _, ok := token.Method.(*jwt.SigningMethodHMAC); !ok {
+			return nil, fmt.Errorf("Token bermasalah : %v", token.Header["alg"])
+		}
+		return []byte(os.Getenv("API_SECRET")), nil
+	})
+	if err != nil {
+		return "", nil
+	}
+
+	claims, ok := token.Claims.(jwt.MapClaims)
+	if ok && token.Valid {
+		uname := fmt.Sprintf("%v", claims["role"])
+
+		return uname, nil
+	}
+	return "", nil
 }
