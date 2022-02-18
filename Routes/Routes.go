@@ -15,31 +15,42 @@ func Routes(db *gorm.DB) *gin.Engine {
 	})
 
 	public := r.Group("/api")
-	public.POST("/ValidateUser/", Controller.ValidateUser)
-	public.POST("/CheckTicket/", Controller.CheckTicket)
-	public.POST("/User/Add", Controller.CreateUser)
-
 	Claim := r.Group("/Claim")
-	Claim.Use(Middleware.JwtAuthMiddlewareTicket())
-	Claim.POST("/Ticket", Controller.ClaimTicket)
-
 	admin := r.Group("/api/admin")
 	admin.Use(Middleware.JwtAuthMiddleware())
+	Claim.Use(Middleware.JwtAuthMiddlewareTicket())
+
+	//Ticket
+	public.POST("/CheckTicket/", Controller.CheckTicket)
+	Claim.POST("/Ticket", Controller.ClaimTicket)
 	admin.GET("/Ticket", Controller.GetTicket)
 	admin.GET("/Ticket/:id", Controller.GetTicketByID)
 	admin.POST("/Ticket/Add", Controller.AddTicket)
 	admin.PATCH("/Ticket/Delete/:id", Controller.DeleteTicket)
 	admin.PATCH("/Ticket/Update/:id", Controller.UpdateTicket)
-	admin.GET("/User", Controller.GetUser)
-	admin.POST("/User/Add", Controller.CreateUser)
 	admin.GET("/Ticket/UsedTicket", Controller.GetUsedTicket)
 	admin.GET("/Ticket/UnusedTicket", Controller.GetUnusedTicket)
+	admin.PATCH("Ticket/RedeemTicket/:id", Controller.RedeemTicket)
+
+	//User
+	public.POST("/ValidateUser/", Controller.ValidateUser)
+	public.POST("/User/Add", Controller.CreateUser)
+	admin.GET("/User", Controller.GetUser)
+	admin.POST("/User/Add", Controller.CreateUser)
 	admin.PATCH("/User/Delete/:id", Controller.DeleteUser)
 	admin.PATCH("/User/Update/:id", Controller.UpdateUser)
-	admin.PATCH("Ticket/RedeemTicket/:id", Controller.RedeemTicket)
-	admin.GET("/Log", Controller.GetLog)
 	admin.PATCH("User/ChangePassword/:id", Controller.ChangePassword)
 	admin.GET("User/GetRole", Controller.GetCurrentRoleUser)
+
+	//Log
+	admin.GET("/Log", Controller.GetLog)
+
+	//Prize
+	public.POST("/Prize", Controller.GetPrizeList)
+	admin.GET("/Prize/GetPrize", Controller.GetPrize)
+	admin.POST("/Prize/AddPrize", Controller.AddPrize)
+	admin.PATCH("/Prize/UpdatePrize/:id", Controller.UpdatePrize)
+	admin.DELETE("/Prize/DeletePrize/:id", Controller.DeletePrize)
 
 	return r
 }
