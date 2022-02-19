@@ -8,7 +8,7 @@ type Prize struct {
 }
 
 func (prize *Prize) TableName() string {
-	return "tbl_prize"
+	return "v_prize"
 }
 
 type AddPrize struct {

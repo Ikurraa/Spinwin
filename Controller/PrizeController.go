@@ -98,7 +98,7 @@ func DeletePrize(c *gin.Context) {
 	}
 }
 
-func GetPrizeList(c *gin.Context) {
+func GetPrizeReward(c *gin.Context) {
 	db := c.MustGet("db").(*gorm.DB)
 	var prize []Models.Prize
 	db.Find(&prize)
@@ -145,7 +145,25 @@ func GetPrizeList(c *gin.Context) {
 			}
 		}
 	}
-	//c.JSON(http.StatusOK, gin.H{
-	//	"data": list,
-	//})
+}
+
+func GetPrizeList(c *gin.Context) {
+	db := c.MustGet("db").(*gorm.DB)
+	var prize []Models.Prize
+	db.Find(&prize)
+	var list []Models.Prize
+	var a int
+	for i, prize := range prize {
+		if i == 0 {
+			a = prize.Percentage
+			list = append(list, prize)
+		} else {
+			prize.Percentage = prize.Percentage + a
+			list = append(list, prize)
+			a = prize.Percentage
+		}
+	}
+	c.JSON(http.StatusOK, gin.H{
+		"data": list,
+	})
 }

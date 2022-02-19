@@ -46,7 +46,8 @@ func Routes(db *gorm.DB) *gin.Engine {
 	admin.GET("/Log", Controller.GetLog)
 
 	//Prize
-	public.POST("/Prize", Controller.GetPrizeList)
+	public.POST("/Prize/List", Controller.GetPrizeList)
+	public.GET("/Prize/GetValueList", Controller.GetPrizeReward)
 	admin.GET("/Prize/GetPrize", Controller.GetPrize)
 	admin.POST("/Prize/AddPrize", Controller.AddPrize)
 	admin.PATCH("/Prize/UpdatePrize/:id", Controller.UpdatePrize)
