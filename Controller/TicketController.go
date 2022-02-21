@@ -262,6 +262,7 @@ func ClaimTicket(c *gin.Context) {
 		return
 	}
 	reward := InputReward.Reward
+	value := InputReward.Value
 	ticket_id, err := ExtractTokenIDTicket(c)
 	if err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{
@@ -287,6 +288,7 @@ func ClaimTicket(c *gin.Context) {
 			passreward := Models.Reward{
 				ID:     ticket.Ticket_code,
 				Reward: reward,
+				Value:  value,
 			}
 			db.Create(&passreward)
 			c.JSON(http.StatusOK, gin.H{
