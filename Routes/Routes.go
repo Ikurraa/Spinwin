@@ -30,6 +30,7 @@ func Routes(db *gorm.DB) *gin.Engine {
 	admin.PATCH("/Ticket/Update/:id", Controller.UpdateTicket)
 	admin.GET("/Ticket/UsedTicket", Controller.GetUsedTicket)
 	admin.GET("/Ticket/UnusedTicket", Controller.GetUnusedTicket)
+	admin.GET("/Ticket/RedeemedTicket", Controller.GetRedeemedTicket)
 	admin.PATCH("Ticket/RedeemTicket/:id", Controller.RedeemTicket)
 
 	//User

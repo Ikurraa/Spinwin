@@ -56,6 +56,22 @@ func GetUnusedTicket(c *gin.Context) {
 	}
 }
 
+func GetRedeemedTicket(c *gin.Context) {
+	var ticket []Models.ViewRedeemedTicket
+	db := c.MustGet("db").(*gorm.DB)
+	db.Find(&ticket)
+	if len(ticket) == 0 {
+		c.JSON(http.StatusNotFound, gin.H{
+			"error": "Tidak ada ticket",
+		})
+		return
+	} else {
+		c.JSON(http.StatusOK, gin.H{
+			"data": ticket,
+		})
+	}
+}
+
 func GetTicketByID(c *gin.Context) {
 	var ticket Models.ViewTicket
 	db := c.MustGet("db").(*gorm.DB)

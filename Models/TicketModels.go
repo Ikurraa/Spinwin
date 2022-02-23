@@ -123,7 +123,7 @@ type ViewUsedTicket struct {
 }
 
 func (ticket *ViewUsedTicket) TableName() string {
-	return "v_ticket"
+	return "v_usedticket"
 }
 
 type ViewUnusedTicket struct {
@@ -136,5 +136,18 @@ type ViewUnusedTicket struct {
 }
 
 func (ticket *ViewUnusedTicket) TableName() string {
-	return "v_ticket"
+	return "v_unusedticket"
+}
+
+type ViewRedeemedTicket struct {
+	Id            int    `json:"id"`
+	Ticket_code   string `json:"ticketcode"`
+	Player_name   string `json:"playername"`
+	Ticket_status int    `json:"ticketstatus"`
+	Created_by    string `json:"createdby"`
+	Reward        string `json:"reward"`
+}
+
+func (ticket *ViewRedeemedTicket) TableName() string {
+	return "v_redeemticket"
 }
